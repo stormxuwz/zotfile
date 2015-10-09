@@ -1270,6 +1270,7 @@ Zotero.ZotFile = {
             return;
         }
         // add row if it does not exists
+
         if(!row) row = zz.attboxAddTabletRow();
         // pdf attachment
         row.setAttribute('hidden', 'false');
@@ -3732,6 +3733,7 @@ Zotero.ZotFile = {
             var zz = Zotero.ZotFile,
                 lib = att.libraryID===null ? 0 : att.libraryID,
                 format_uri = 'zotero://open-pdf/%(lib)_%(key)/%(page)',
+                format_uri_item='zotero://select/items/%(lib)_%(key)',
                 str_title = zz.ZFgetString('extraction.noteTitle'),
                 format_title = zz.prefs.getCharPref("pdfExtraction.formatNoteTitle"),
                 format_title_color = zz.prefs.getCharPref("pdfExtraction.formatNoteTitleColor"),
@@ -3759,6 +3761,7 @@ Zotero.ZotFile = {
                 var anno = annotations[i],
                     page = anno.page,
                     uri = zz.str_format(format_uri, {'lib': lib, 'key': att.key, 'page': anno.page});
+                    uri_item=zz.str_format(format_uri_item, {'lib': lib, 'key': att.key, 'page': anno.page});
                 // get page
                 if(zz.prefs.getBoolPref("pdfExtraction.NoteTruePage")) {
                     try {
@@ -3769,6 +3772,8 @@ Zotero.ZotFile = {
                 }
                 // link
                 var link = '<a href="' + uri + '">' + cite + page + '</a>',
+                    link_item= '<a href="' + uri_item + '">' + cite + page + '</a>',
+
                     color = ('color' in anno) ? ('rgb(' + anno.color.join(',') + ')') : 'rgb(255,255,255)',
                     color_category = getColorCategory(anno.color[0], anno.color[1], anno.color[2]),
                     color_category_hex = settings_colors[color_category];
@@ -3777,7 +3782,7 @@ Zotero.ZotFile = {
                     var format_markup = anno.subtype == "Highlight" ? format_highlight : format_underline;
                     for (var k = 0; k < repl.length; k++)
                         anno.markup = anno.markup.replace(reg[k], repl[k].replacement);
-                    var markup_formated = zz.str_format(format_markup, {'content': anno.markup, 'cite': link, 'page': page, 'uri': uri, 'label': anno.title, 'color': color, 'color_category': color_category_hex});
+                    var markup_formated = zz.str_format(format_markup, {'content': anno.markup,'cite_item':link_item, 'cite': link, 'page': page, 'uri': uri, 'uri_item':uri_item,'label': anno.title, 'color': color, 'color_category': color_category_hex});
                     if(!separate_color_notes)
                         note += markup_formated;
                     else {
@@ -3791,7 +3796,7 @@ Zotero.ZotFile = {
                   (!anno.markup || this.strDistance(anno.content,anno.markup)>0.15 )) {                    
                     var content = anno.content.replace(/(\r\n|\n|\r)/gm,"<br>");
                     // '<p><i>%(content) (<a href="%(uri)">note on p.%(page)</a>)</i></p><br>'
-                    var content_formated = zz.str_format(format_note, {'content': content, 'cite': link, 'page': page, 'uri': uri, 'label': anno.title,'color': color, 'color_category': color_category_hex});
+                    var content_formated = zz.str_format(format_note, {'content': content, 'cite': link, 'cite_item':link_item,'page': page, 'uri': uri, 'uri_item':uri_item, 'label': anno.title,'color': color, 'color_category': color_category_hex});
                     if(!separate_color_notes)
                         note += content_formated;
                     else {
